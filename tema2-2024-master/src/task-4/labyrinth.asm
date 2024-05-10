@@ -32,5 +32,3 @@ end:
     popa
     leave
     ret
-    
-    ;; DO NOT MODIFY
