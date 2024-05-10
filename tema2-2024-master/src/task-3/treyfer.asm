@@ -21,6 +21,47 @@ treyfer_crypt:
 	;; FREESTYLE STARTS HERE
 	;; TODO implement treyfer_crypt
 
+	mov ecx, [num_rounds] ; numărul de runde
+
+    ; Inițializăm t cu primul byte al textului de criptat
+	xor ebx, ebx
+    mov bl, byte [esi]
+
+    .round_loop:
+        ; Iterăm prin fiecare byte din blocul de text
+        xor edx, edx  ; edx = index (indexul byte-ului curent din bloc)
+        .byte_loop:
+            ; Adunăm byte-ul corespunzător al cheii la t
+            add bl, byte [edi + edx]
+
+            ; Aplicăm S-box pe t
+            mov bl, [sbox + ebx]
+
+			; Obținem adresa byte-ului următor din bloc
+            mov eax, edx
+            inc eax
+            and eax, 7 ; efectuăm operația modulo 8 (deoarece avem 8 bytes în bloc)
+
+            ; Adunăm la t valoarea din blocul de text corespunzătoare următorului byte
+            add bl, byte [esi + eax]
+
+			; Rotăm t la stânga cu 1 bit
+            rol bl, 1
+
+            ; Actualizăm byte-ul următor din bloc
+            mov byte [esi + eax], bl
+
+            ; Incrementăm indexul
+            inc edx
+
+            ; Verificăm dacă am terminat blocul
+            cmp edx, 8
+            jne .byte_loop
+
+        ; Decrementăm numărul de runde și verificăm dacă am terminat
+        dec ecx
+        jnz .round_loop
+
     	;; FREESTYLE ENDS HERE
 	;; DO NOT MODIFY
 	popa
@@ -36,6 +77,55 @@ treyfer_dcrypt:
 	;; DO NOT MODIFY
 	;; FREESTYLE STARTS HERE
 	;; TODO implement treyfer_dcrypt
+	mov esi, [ebp + 8] ; plaintext
+	mov edi, [ebp + 12] ; key
+	mov ecx, [num_rounds] ; numărul de runde
+
+for_runde:
+	; Setăm contorul la 7 pentru a începe decriptarea
+	mov ebx, 7
+
+	for_decriptare:
+		; Se încarcă un byte din bloc
+		mov dl, byte [esi + ebx]
+		; Se adaugă un byte din cheie
+		add dl, byte [edi + ebx]
+		; Se aplică substituția S-box
+		mov dl, byte[sbox + edx]
+
+		; Verificăm dacă am parcurs toți cei 8 bytes
+		cmp ebx, 7
+		jnz decriptare
+
+		; Pentru primul byte din bloc, se aplică operațiile suplimentare
+		mov al, byte [esi]
+		ror al, 1 
+		sub al, dl
+		mov byte [esi], al
+		jmp final
+
+		decriptare:
+		; Se preia byte-ul următor din bloc
+		mov al, byte [esi + ebx + 1]
+		; Se rotește în dreapta cu o poziție
+		ror al, 1 
+		; Se scade valoarea din S-box
+		sub al, dl
+		; Se stochează rezultatul în bloc
+		mov byte [esi + ebx + 1], al
+
+	final: 	
+	; Decrementăm contorul
+	dec ebx
+	; Verificăm dacă am ajuns la finalul blocului
+	cmp ebx, 0
+	jge for_decriptare
+
+	; Decrementăm contorul de runde
+	dec ecx
+	; Verificăm dacă mai sunt runde de procesat
+	jnz for_runde
+
 
 	;; FREESTYLE ENDS HERE
 	;; DO NOT MODIFY

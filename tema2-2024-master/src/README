@@ -1,0 +1,25 @@
+CHECK PERMISSIONS
+
+Setup: La începutul funcției, stiva este configurată și se fac anumite operații preliminare pentru a pregăti funcția pentru lucrul efectiv.
+Preluarea argumentelor: Funcția primește două argumente prin intermediul stivei: id și address unde se va întoarce rezultatul verificării permisiunilor.
+Extragerea identificatorului și a permisiunilor: Identificatorul și permisiunile sunt stocate în registrul eax. Identificatorul este împărțit în două părți: prima parte este codul de permisiuni (cele mai semnificative 8 biți), iar a doua parte este un alt identificator (cei mai puțin semnificativi 24 biți).
+Compararea cu permisiunile cunoscute: Se compară permisiunile extrase cu permisiunile cunoscute, care sunt stocate într-o zonă de memorie externă, ant_permissions. Aici este utilizată o tehnică bit a bit pentru a face această comparație.
+Setarea rezultatului și returnarea: Dacă permisiunile corespund, se setează rezultatul la 1, altfel se setează la 0. Rezultatul este stocat la adresa specificată de argumentul address. Apoi, funcția se termină și se revine la apelant.
+
+CRIPTARE TREYFER
+
+Criptare:
+Fiecare byte din textul clar este combinat cu un byte corespunzător din cheie folosind o operație de adunare modulo 256.
+Rezultatul este apoi trecut printr-o cutie de substituție (S-box), care este o tabelă de substituție fixă.
+Byte-urile rezultate sunt rotite la stânga cu un bit și adăugate la byte-urile corespunzătoare din textul clar.
+Acest proces este repetat de un număr fix de ori (numărul de runde).
+Decriptare:
+Pentru a decripta, procesul este inversul criptării:
+Se face operația inversă a rotației la stânga și a adunării modulo 256.
+Se aplică operația inversă a S-box.
+Acest proces este, de asemenea, repetat pentru fiecare rundă.
+
+Funcția treyfer_crypt primește un text clar și o cheie, criptează textul clar folosind algoritmul Treyfer și înlocuiește textul clar cu textul criptat.
+Funcția treyfer_dcrypt primește textul criptat și cheia corespunzătoare și decriptează textul criptat, înlocuindu-l cu textul clar.
+
+Ambele funcții utilizează o cutie de substituție (sbox) și un număr de runde fixe (num_rounds). Operațiile sunt parțial explicite în comentarii în cod, dar principiile de bază ale algoritmului Treyfer sunt utilizate pentru criptare și decriptare.

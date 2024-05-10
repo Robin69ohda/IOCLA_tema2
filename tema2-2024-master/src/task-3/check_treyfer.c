@@ -92,7 +92,8 @@ double do_tests(int type, int num_tests) {
 			score += 2.5f;
 			printf("Test %d..................PASSED: %.2lfp\n", i + 1, 2.5);
 		} else {
-			printf("Test %d..................FAILED: %.2lfp\n", i + 1, 0);
+			double l = 0;
+			printf("Test %d..................FAILED: %.2lfp\n", i + 1, l);
 		}
 
 		fclose(in);
